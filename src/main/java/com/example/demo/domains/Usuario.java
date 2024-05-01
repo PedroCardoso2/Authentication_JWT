@@ -24,8 +24,8 @@ import lombok.Setter;
 
 @Entity(name = "Usuario")
 @Table(name = "usuario")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class Usuario implements UserDetails{
