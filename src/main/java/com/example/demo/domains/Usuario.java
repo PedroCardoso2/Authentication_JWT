@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.demo.dts.DadosRegistroUsuario;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,6 +41,13 @@ public class Usuario implements UserDetails{
 	private String senha;
 	private Date data_nascimento;
 	
+	//Cadastro
+	public Usuario(DadosRegistroUsuario dados) {
+		this.nome = dados.nome();
+		this.email = dados.email();
+		this.senha = dados.senha();
+		this.data_nascimento = dados.date();
+	}
 	
 	
 	@Override

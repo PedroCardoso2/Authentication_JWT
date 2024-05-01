@@ -1,4 +1,4 @@
-package com.example.demo.infra;
+package com.example.demo.infra.security;
 
 import java.io.IOException;
 

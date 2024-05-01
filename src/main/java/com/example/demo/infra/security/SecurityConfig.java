@@ -1,4 +1,4 @@
-package com.example.demo.infra;
+package com.example.demo.infra.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
