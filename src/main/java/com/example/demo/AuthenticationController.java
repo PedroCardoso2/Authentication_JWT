@@ -53,7 +53,15 @@ public class AuthenticationController {
 		
 		var passwordEncode = new BCryptPasswordEncoder().encode(dados.senha());
 		
-		Usuario newUsuario = new Usuario(dados);
+		DadosRegistroUsuario dadosCriptografados = new DadosRegistroUsuario(
+                dados.nome(),
+                dados.email(),
+                passwordEncode,
+                dados.date()
+                
+        );
+		
+		Usuario newUsuario = new Usuario(dadosCriptografados);
 		
 		repository.save(newUsuario);
 		
