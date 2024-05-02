@@ -23,7 +23,7 @@ public class TokenService {
 	            var algoritmo = Algorithm.HMAC256(CHAVE_SECRETA);
 	            return JWT.create()
 	                    .withIssuer("UniforAPI")
-	                    .withSubject(usu.getUsername())
+	                    .withSubject(usu.getLogin())
 	                    .withExpiresAt(dataExpiracao())
 	                    .sign(algoritmo);
 	        } catch (JWTCreationException exception){

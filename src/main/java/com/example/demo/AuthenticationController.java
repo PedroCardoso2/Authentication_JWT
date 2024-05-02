@@ -1,7 +1,8 @@
 package com.example.demo;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+// @SecurityRequirement(name = "bearer-key")
 public class AuthenticationController {
 
 	@Autowired
@@ -32,22 +34,25 @@ public class AuthenticationController {
 
 	@Autowired
 	private UsuarioRepository repository;
+	
+	
 
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody @Valid DadosLoginUsuario dados) {
-		var autheticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
+	public ResponseEntity login(@RequestBody @Valid DadosLoginUsuario dados) throws AuthenticationException {
+		var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
 
-		var authetication = manager.authenticate(autheticationToken);
+	    var authentication = manager.authenticate(authenticationToken);
 
-		var tokenJWT = tokenService.gerarToken((Usuario) authetication.getPrincipal());
+		var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
 
 		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
 	}
+
 	
 	
 	@PostMapping("/register")
 	public ResponseEntity registrar(@RequestBody @Valid DadosRegistroUsuario dados) {
-		if(repository.findByEmail(dados.email()) != null) {
+		if(repository.findByLogin(dados.email()) != null) {
 			return ResponseEntity.badRequest().body("Login já existe");
 		}
 		

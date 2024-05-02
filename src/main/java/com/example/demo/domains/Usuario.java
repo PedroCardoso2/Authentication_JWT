@@ -40,6 +40,7 @@ public class Usuario implements UserDetails{
 	private String email;
 	private String senha;
 	private Date data_nascimento;
+	private String login;
 	
 	//Cadastro
 	public Usuario(DadosRegistroUsuario dados) {
@@ -47,9 +48,70 @@ public class Usuario implements UserDetails{
 		this.email = dados.email();
 		this.senha = dados.senha();
 		this.data_nascimento = dados.date();
+		this.login = dados.email();
 	}
 	
 	
+	public Long getId_usuario() {
+		return id_usuario;
+	}
+
+
+	public void setId_usuario(Long id_usuario) {
+		this.id_usuario = id_usuario;
+	}
+
+
+	public String getNome() {
+		return nome;
+	}
+
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+	public String getSenha() {
+		return senha;
+	}
+
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+
+	public Date getData_nascimento() {
+		return data_nascimento;
+	}
+
+
+	public void setData_nascimento(Date data_nascimento) {
+		this.data_nascimento = data_nascimento;
+	}
+
+
+	public String getLogin() {
+		return login;
+	}
+
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -60,7 +122,7 @@ public class Usuario implements UserDetails{
 	}
 	@Override
 	public String getUsername() {
-		return this.email;
+		return this.login;
 	}
 	@Override
 	public boolean isAccountNonExpired() {
