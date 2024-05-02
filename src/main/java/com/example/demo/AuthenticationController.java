@@ -38,15 +38,21 @@ public class AuthenticationController {
 	
 
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody @Valid DadosLoginUsuario dados) throws AuthenticationException {
-		var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+	public ResponseEntity<?> login(@RequestBody @Valid DadosLoginUsuario dados) throws AuthenticationException {
+		if(repository.findByLogin(dados.login()) != null) {
+			var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
 
-	    var authentication = manager.authenticate(authenticationToken);
+		    var authentication = manager.authenticate(authenticationToken);
 
-		var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+			var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
 
-		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+		} 
+		return ResponseEntity.notFound().build();
+		
 	}
+	
+	 
 
 	
 	
@@ -74,5 +80,6 @@ public class AuthenticationController {
 		
 		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
 	}
+	
 
 }

@@ -42,6 +42,10 @@ public class Usuario implements UserDetails{
 	private Date data_nascimento;
 	private String login;
 	
+	public Usuario() {
+		
+	}
+	
 	//Cadastro
 	public Usuario(DadosRegistroUsuario dados) {
 		this.nome = dados.nome();
@@ -50,6 +54,7 @@ public class Usuario implements UserDetails{
 		this.data_nascimento = dados.date();
 		this.login = dados.email();
 	}
+	
 	
 	
 	public Long getId_usuario() {
