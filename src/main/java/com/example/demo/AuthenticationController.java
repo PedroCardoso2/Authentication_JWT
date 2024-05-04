@@ -9,7 +9,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,7 @@ import com.example.demo.dts.DadosListagemUsuariosSuporte;
 import com.example.demo.dts.DadosLoginUsuario;
 import com.example.demo.dts.DadosRegistroUsuario;
 import com.example.demo.dts.DadosUsuario;
+import com.example.demo.infra.exception.NotUserPermission;
 import com.example.demo.infra.security.DadosTokenJWT;
 import com.example.demo.infra.security.TokenService;
 
@@ -39,58 +43,42 @@ public class AuthenticationController {
 
 	@Autowired
 	private UsuarioRepository repository;
-	
-	
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid DadosLoginUsuario dados) throws AuthenticationException {
-		if(repository.findByLogin(dados.login()) != null) {
+		if (repository.findByLogin(dados.login()) != null) {
 			var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
 
-		    var authentication = manager.authenticate(authenticationToken);
+			var authentication = manager.authenticate(authenticationToken);
 
 			var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
 
 			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
-		} 
-		return ResponseEntity.notFound().build();	
+		}
+		return ResponseEntity.notFound().build();
 	}
-	
-	 
-	
-	
+
 	@PostMapping("/register")
 	public ResponseEntity registrar(@RequestBody @Valid DadosRegistroUsuario dados) {
-		if(repository.findByLogin(dados.email()) != null) {
+		if (repository.findByLogin(dados.email()) != null) {
 			return ResponseEntity.badRequest().body("Login já existe");
 		}
-		
+
 		var passwordEncode = new BCryptPasswordEncoder().encode(dados.senha());
-		
-		DadosRegistroUsuario dadosCriptografados = new DadosRegistroUsuario(
-                dados.nome(),
-                dados.email(),
-                passwordEncode,
-                dados.date(),
-                dados.role()
-                
-        );
-		
+
+		DadosRegistroUsuario dadosCriptografados = new DadosRegistroUsuario(dados.nome(), dados.email(), passwordEncode,
+				dados.date(), dados.role()
+
+		);
+
 		Usuario newUsuario = new Usuario(dadosCriptografados);
-		
+
 		repository.save(newUsuario);
-		
+
 		String tokenJWT = tokenService.gerarToken(newUsuario);
-		
+
 		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
 	}
-	
-	
-	@PostMapping("/all")
-	public ResponseEntity<Page<DadosListagemUsuariosSuporte>> listagemUsuariosCadastrados(@RequestBody @Valid DadosUsuario dados,@PageableDefault Pageable pageable){
-		Page<DadosListagemUsuariosSuporte> page = repository.findAll(pageable).map(DadosListagemUsuariosSuporte::new);
-		return  ResponseEntity.ok().body(page);
-	}
-	
+
 
 }
