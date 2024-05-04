@@ -13,6 +13,7 @@ import com.example.demo.dts.DadosRegistroUsuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,6 +42,8 @@ public class Usuario implements UserDetails{
 	private String senha;
 	private Date data_nascimento;
 	private String login;
+	@Enumerated
+	private UserRole role;
 	
 	public Usuario() {
 		
@@ -53,6 +56,7 @@ public class Usuario implements UserDetails{
 		this.senha = dados.senha();
 		this.data_nascimento = dados.date();
 		this.login = dados.email();
+		this.role = dados.role();
 	}
 	
 	
@@ -119,7 +123,9 @@ public class Usuario implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
 		return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+		
 	}
 	@Override
 	public String getPassword() {

@@ -3,6 +3,9 @@ package com.example.demo;
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domains.Usuario;
 import com.example.demo.domains.UsuarioRepository;
+import com.example.demo.dts.DadosListagemUsuariosSuporte;
 import com.example.demo.dts.DadosLoginUsuario;
 import com.example.demo.dts.DadosRegistroUsuario;
+import com.example.demo.dts.DadosUsuario;
 import com.example.demo.infra.security.DadosTokenJWT;
 import com.example.demo.infra.security.TokenService;
 
@@ -48,12 +53,10 @@ public class AuthenticationController {
 
 			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
 		} 
-		return ResponseEntity.notFound().build();
-		
+		return ResponseEntity.notFound().build();	
 	}
 	
 	 
-
 	
 	
 	@PostMapping("/register")
@@ -68,7 +71,8 @@ public class AuthenticationController {
                 dados.nome(),
                 dados.email(),
                 passwordEncode,
-                dados.date()
+                dados.date(),
+                dados.role()
                 
         );
 		
@@ -79,6 +83,13 @@ public class AuthenticationController {
 		String tokenJWT = tokenService.gerarToken(newUsuario);
 		
 		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+	}
+	
+	
+	@PostMapping("/all")
+	public ResponseEntity<Page<DadosListagemUsuariosSuporte>> listagemUsuariosCadastrados(@RequestBody @Valid DadosUsuario dados,@PageableDefault Pageable pageable){
+		Page<DadosListagemUsuariosSuporte> page = repository.findAll(pageable).map(DadosListagemUsuariosSuporte::new);
+		return  ResponseEntity.ok().body(page);
 	}
 	
 

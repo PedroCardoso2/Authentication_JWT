@@ -27,6 +27,7 @@ public class SecurityConfig {
 		        .authorizeHttpRequests(req -> req
 		                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
 		                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+		                .requestMatchers(HttpMethod.GET, "/auth/all").hasRole("ADMIN")
 		                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 		                .anyRequest().authenticated())
 		        .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)

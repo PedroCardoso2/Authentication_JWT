@@ -2,6 +2,8 @@ package com.example.demo.dts;
 
 import java.util.Date;
 
+import com.example.demo.domains.UserRole;
+
 import jakarta.validation.constraints.NotBlank;
 
 public record DadosRegistroUsuario(
@@ -12,7 +14,9 @@ public record DadosRegistroUsuario(
 		@NotBlank
 		String senha,
 		@NotBlank
-		Date date
+		Date date,
+		@NotBlank
+		UserRole role
 ) {
 
 }
