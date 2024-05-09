@@ -16,7 +16,7 @@ public record DadosRegistroUsuario(
 		@NotBlank
 		Date date,
 		@NotBlank
-		UserRole role
+		Integer role
 ) {
 
 }

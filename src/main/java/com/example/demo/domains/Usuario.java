@@ -42,8 +42,8 @@ public class Usuario implements UserDetails{
 	private String senha;
 	private Date data_nascimento;
 	private String login;
-	@Enumerated
-	private UserRole role;
+	
+	private Integer role;
 	
 	public Usuario() {
 		
@@ -123,7 +123,7 @@ public class Usuario implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+		if(this.role == 0) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
 		return List.of(new SimpleGrantedAuthority("ROLE_USER"));
 		
 	}
