@@ -3,16 +3,14 @@ package com.example.demo;
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domains.Usuario;
 import com.example.demo.domains.UsuarioRepository;
-import com.example.demo.dts.DadosListagemUsuariosSuporte;
 import com.example.demo.dts.DadosLoginUsuario;
 import com.example.demo.dts.DadosRegistroUsuario;
-import com.example.demo.dts.DadosUsuario;
-import com.example.demo.infra.exception.NotUserPermission;
 import com.example.demo.infra.security.DadosTokenJWT;
 import com.example.demo.infra.security.TokenService;
 
@@ -42,24 +37,27 @@ public class AuthenticationController {
 	private TokenService tokenService;
 
 	@Autowired
-	private UsuarioRepository repository;
+	private  UsuarioRepository repository;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody @Valid DadosLoginUsuario dados) throws AuthenticationException {
-	    Usuario usuario = (Usuario) repository.findByLogin(dados.login());
-	    if (usuario != null) {
-	        var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+	public ResponseEntity<?> login(@RequestBody @Valid DadosLoginUsuario dados) throws Exception {
+		Usuario usuario = (Usuario) repository.findByLogin(dados.login());
+		if (usuario != null) {
+			var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+			
+			
 
-	        var authentication = manager.authenticate(authenticationToken);
+			var authentication = manager.authenticate(authenticationToken);
 
-	        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+		
 
-	        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
-	    } else {
-	        throw new AuthenticationException("Usuário não encontrado");
-	    }
+			var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+
+			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT) );
+		} else {
+			throw new AuthenticationException("Usuário não encontrado");
+		}
 	}
-
 
 	@PostMapping("/register")
 	public ResponseEntity registrar(@RequestBody @Valid DadosRegistroUsuario dados) {
@@ -70,9 +68,7 @@ public class AuthenticationController {
 		var passwordEncode = new BCryptPasswordEncoder().encode(dados.senha());
 
 		DadosRegistroUsuario dadosCriptografados = new DadosRegistroUsuario(dados.nome(), dados.email(), passwordEncode,
-				dados.date(), dados.role()
-
-		);
+				dados.date(), dados.role());
 
 		Usuario newUsuario = new Usuario(dadosCriptografados);
 
@@ -83,5 +79,5 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
 	}
 
-
+	
 }
